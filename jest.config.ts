@@ -1,6 +1,6 @@
-import { getJestProjects } from '@nrwl/jest';
+import { getJestProjects } from '@nrwl/jest'
 
 console.log(getJestProjects())
 export default {
-  projects: getJestProjects(),
-};
+	projects: getJestProjects(),
+}
