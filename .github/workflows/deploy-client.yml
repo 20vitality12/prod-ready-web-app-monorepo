@@ -1,6 +1,6 @@
 name: Deploy Client
 
-run-name: ${{ github.workflow }} from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}
+run-name: ${{ github.workflow }} from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}, [tests - ${{ inputs.tests }}]
 
 on:
   workflow_dispatch:
@@ -13,31 +13,38 @@ on:
         options:
           - develop
           - production
+      tests:
+        type: boolean
+        description: "run tests?"
+        default: true
+        required: true
+      protection:
+        description: "write production to deploy from master to production"
+        required: true
+        default: "not-production"
       branch:
-        description: "Branch, tag or SHA to checkout *(optional)"
+        description: "branch, tag or SHA to checkout *(optional)"
         required: false
   push:
     branches:
-      - master
       - develop
 
 concurrency:
   group: ${{ github.workflow }}
 
 jobs:
-#  stage:
-#    uses: ./.github/workflows/_reusable-protect-stage.yml
-#    with:
-#      event_name: ${{ github.event_name }}
-#      stage: ${{ inputs.stage }}
-#      protection: ${{ inputs.protection }}
+  stage:
+    uses: ./.github/workflows/_reusable-protect-stage.yml
+    with:
+      event_name: ${{ github.event_name }}
+      stage: ${{ inputs.stage }}
+      protection: ${{ inputs.protection }}
 
   client:
     uses: ./.github/workflows/_reusable-deploy-client.yml
     with:
       app: client
-#      stage: ${{ inputs.stage || needs.stage.outputs.stage }}
-#      stack: ${{ needs.stage.outputs.stack }}
-      stage: develop
-      stack: monolith-it-develop-client
+      stage: ${{ inputs.stage || needs.stage.outputs.stage }}
+      stack: ${{ needs.stage.outputs.stack }}
+      tests: ${{ inputs.tests}}
     secrets: inherit

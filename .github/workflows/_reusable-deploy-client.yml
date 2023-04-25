@@ -12,6 +12,9 @@ on:
       stack:
         required: true
         type: string
+      tests:
+        required: true
+        type: boolean
 
 jobs:
   deploy:
@@ -54,6 +57,7 @@ jobs:
         run: npx nx build ${{ inputs.app}} --skip-nx-cache
 
       - name: Test ${{ inputs.app }}
+        if: ${{ inputs.tests }}
         run: npx nx test ${{ inputs.app}} --skip-nx-cache
 
       ##################################################################################################################
@@ -74,6 +78,6 @@ jobs:
       - name: Upload build to S3
         run: aws s3 sync ./dist/apps/${{ inputs.app }} s3://${{ env.bucket }}
 
-      - name: Upload build to S3
+      - name: Invalidate CloudFront cache
         run: aws cloudfront create-invalidation --distribution-id ${{ env.distributionId }} --paths "/*"
 
