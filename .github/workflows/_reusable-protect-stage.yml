@@ -52,9 +52,9 @@ jobs:
       - name: Set CloudFormation stacks names
         id: stacks
         run: |
-          echo "ecs-cluster-stack=${{ env.DOMAIN }}-${{ steps.stage.outputs.stage || inputs.stage }}-ecs-cluster" >> $GITHUB_OUTPUT
-          echo "client-stack=${{ env.DOMAIN }}-${{ steps.stage.outputs.stage || inputs.stage }}-server" >> $GITHUB_OUTPUT
-          echo "server-stack=${{ env.DOMAIN }}-${{ steps.stage.outputs.stage || inputs.stage }}-server" >> $GITHUB_OUTPUT
+          echo "ecs-cluster-stack=${{ vars.DOMAIN }}-${{ steps.stage.outputs.stage || inputs.stage }}-ecs-cluster" >> $GITHUB_OUTPUT
+          echo "client-stack=${{ vars.DOMAIN }}-${{ steps.stage.outputs.stage || inputs.stage }}-server" >> $GITHUB_OUTPUT
+          echo "server-stack=${{ vars.DOMAIN }}-${{ steps.stage.outputs.stage || inputs.stage }}-server" >> $GITHUB_OUTPUT
 
       - name: Check stage
         run: |
