@@ -7,7 +7,7 @@ on:
     inputs:
       stage:
         type: choice
-        description: "stage to deploy"
+        description: "Stage to deploy"
         required: true
         default: develop
         options:
@@ -15,15 +15,15 @@ on:
           - production
       tests:
         type: boolean
-        description: "run tests?"
+        description: "Run tests?"
         default: true
         required: true
       protection:
-        description: "write production to deploy from master to production"
+        description: "Write production to deploy from master to production"
         required: true
         default: "not-production"
       branch:
-        description: "branch, tag or SHA to checkout *(optional)"
+        description: "Branch, tag or SHA to checkout *(optional)"
         required: false
   push:
     branches:
