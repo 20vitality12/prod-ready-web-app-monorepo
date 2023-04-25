@@ -1,0 +1,77 @@
+{
+	"name": "tasks-ecs-task",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "apps/tasks/ecs-task/src",
+	"projectType": "application",
+	"targets": {
+		"build": {
+			"executor": "@nrwl/esbuild:esbuild",
+			"outputs": ["{options.outputPath}"],
+			"defaultConfiguration": "production",
+			"options": {
+				"platform": "node",
+				"outputPath": "dist/apps/tasks/ecs-task",
+				"format": ["cjs"],
+				"bundle": false,
+				"main": "apps/tasks/ecs-task/src/main.ts",
+				"tsConfig": "apps/tasks/ecs-task/tsconfig.app.json",
+				"assets": ["apps/tasks/ecs-task/src/assets"],
+				"generatePackageJson": true,
+				"esbuildOptions": {
+					"sourcemap": true,
+					"outExtension": {
+						".js": ".js"
+					}
+				}
+			},
+			"configurations": {
+				"development": {},
+				"production": {
+					"esbuildOptions": {
+						"sourcemap": false,
+						"outExtension": {
+							".js": ".js"
+						}
+					}
+				}
+			}
+		},
+		"serve": {
+			"executor": "@nrwl/js:node",
+			"defaultConfiguration": "development",
+			"options": {
+				"buildTarget": "tasks-ecs-task:build"
+			},
+			"configurations": {
+				"development": {
+					"buildTarget": "tasks-ecs-task:build:development"
+				},
+				"production": {
+					"buildTarget": "tasks-ecs-task:build:production"
+				}
+			}
+		},
+		"lint": {
+			"executor": "@nrwl/linter:eslint",
+			"outputs": ["{options.outputFile}"],
+			"options": {
+				"lintFilePatterns": ["apps/tasks/ecs-task/**/*.ts"]
+			}
+		},
+		"test": {
+			"executor": "@nrwl/jest:jest",
+			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"options": {
+				"jestConfig": "apps/tasks/ecs-task/jest.config.ts",
+				"passWithNoTests": true
+			},
+			"configurations": {
+				"ci": {
+					"ci": true,
+					"codeCoverage": true
+				}
+			}
+		}
+	},
+	"tags": []
+}

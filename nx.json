@@ -1,17 +1,15 @@
 {
-	"$schema": "./node_modules/nx/schemas/nx-schema.json",
 	"npmScope": "monolith",
-	"affected": {
-		"defaultBase": "master"
-	},
-	"tasksRunnerOptions": {
-		"default": {
-			"runner": "@nrwl/nx-cloud",
-			"options": {
-				"cacheableOperations": ["build", "lint", "test"],
-				"accessToken": "NjI4MWUyOGQtNGFiMy00ZjYyLWI3Y2UtNTQxNTdjOTBiYzhhfHJlYWQtd3JpdGU="
-			}
-		}
+	"namedInputs": {
+		"default": ["{projectRoot}/**/*", "sharedGlobals"],
+		"production": [
+			"default",
+			"!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+			"!{projectRoot}/tsconfig.spec.json",
+			"!{projectRoot}/.eslintrc.json",
+			"!{projectRoot}/jest.config.[jt]s"
+		],
+		"sharedGlobals": ["{workspaceRoot}/babel.config.json"]
 	},
 	"targetDefaults": {
 		"build": {
@@ -23,18 +21,40 @@
 		},
 		"lint": {
 			"inputs": ["default", "{workspaceRoot}/.eslintrc.json", "{workspaceRoot}/.eslintignore"]
+		},
+		"deploy": {
+			"inputs": [
+				"production",
+				"^production",
+				{
+					"env": "STAGE"
+				}
+			]
+		},
+		"package": {
+			"inputs": [
+				"production",
+				"^production",
+				{
+					"env": "STAGE"
+				}
+			]
+		},
+		"e2e": {
+			"inputs": ["default", "^production"]
 		}
 	},
-	"namedInputs": {
-		"default": ["{projectRoot}/**/*", "sharedGlobals"],
-		"production": [
-			"default",
-			"!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
-			"!{projectRoot}/tsconfig.spec.json",
-			"!{projectRoot}/.eslintrc.json",
-			"!{projectRoot}/jest.config.[jt]s"
-		],
-		"sharedGlobals": []
+	"tasksRunnerOptions": {
+		"default": {
+			"runner": "@nrwl/nx-cloud",
+			"options": {
+				"cacheableOperations": ["build", "lint", "test", "package", "deploy"],
+				"accessToken": "NjI4MWUyOGQtNGFiMy00ZjYyLWI3Y2UtNTQxNTdjOTBiYzhhfHJlYWQtd3JpdGU="
+			}
+		}
+	},
+	"affected": {
+		"defaultBase": "master"
 	},
 	"generators": {
 		"@nrwl/react": {

@@ -1,0 +1,28 @@
+{
+	"name": "iac",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"projectType": "application",
+	"sourceRoot": "apps/iac/src",
+	"targets": {
+		"deploy": {
+			"executor": "@codebrew/nx-aws-cdk:deploy",
+			"options": {
+				"command": "--all --profile monolith"
+			}
+		},
+		"destroy": {
+			"executor": "@codebrew/nx-aws-cdk:destroy",
+			"options": {
+				"command": "--all --force"
+			}
+		},
+		"lint": {
+			"executor": "@nrwl/linter:eslint",
+			"outputs": ["{options.outputFile}"],
+			"options": {
+				"lintFilePatterns": ["apps/iac/**/*.ts"]
+			}
+		}
+	},
+	"tags": []
+}

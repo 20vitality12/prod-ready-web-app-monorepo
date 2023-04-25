@@ -1,0 +1,63 @@
+{
+	"name": "serverless-lambda",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"projectType": "application",
+	"sourceRoot": "apps/serverless/lambda/src",
+	"targets": {
+		"serve": {
+			"executor": "@ns3/nx-serverless:sls",
+			"options": {
+				"command": "offline"
+			}
+		},
+		"package": {
+			"executor": "@ns3/nx-serverless:sls",
+			"outputs": ["apps\\serverless\\lambda\\.serverless", "dist/apps/serverless/lambda"],
+			"dependsOn": ["^build"],
+			"options": {
+				"command": "package"
+			}
+		},
+		"deploy": {
+			"executor": "@ns3/nx-serverless:sls",
+			"outputs": ["apps\\serverless\\lambda\\.serverless", "dist/apps/serverless/lambda"],
+			"dependsOn": ["package"],
+			"options": {
+				"command": "deploy",
+				"package": ".serverless"
+			}
+		},
+		"remove": {
+			"executor": "@ns3/nx-serverless:sls",
+			"options": {
+				"command": "remove"
+			}
+		},
+		"sls": {
+			"executor": "@ns3/nx-serverless:sls",
+			"options": {}
+		},
+		"test": {
+			"executor": "@nrwl/jest:jest",
+			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"options": {
+				"jestConfig": "apps/serverless/lambda/jest.config.ts",
+				"passWithNoTests": true
+			},
+			"configurations": {
+				"ci": {
+					"ci": true,
+					"codeCoverage": true
+				}
+			}
+		},
+		"lint": {
+			"executor": "@nrwl/linter:eslint",
+			"outputs": ["{options.outputFile}"],
+			"options": {
+				"lintFilePatterns": ["apps/serverless/lambda/src/**/*.{ts,tsx,js,jsx}"]
+			}
+		}
+	},
+	"tags": []
+}

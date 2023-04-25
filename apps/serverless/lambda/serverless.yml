@@ -1,0 +1,43 @@
+service: serverless-lambda
+
+plugins:
+  - 'serverless-bundle'
+  - serverless-offline
+
+package:
+  individually: true
+
+custom:
+  stage: ${opt:stage, env:STAGE, 'dev'}
+  serverless-offline:
+    httpPort: 3333
+    lambdaPort: 2333
+    noPrependStageInUrl: true
+  bundle:
+    linting: false
+    tsConfig: 'tsconfig.app.json'
+
+params:
+  prod:
+    production: true
+  default:
+    production: false
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${self:custom.stage}
+  endpointType: regional
+  timeout: 20
+  environment:
+    APP_ENV: ${self:custom.stage}
+    IS_PRODUCTION: ${param:production}
+    NODE_OPTIONS: --enable-source-maps
+
+functions:
+  foo:
+    handler: src/handlers/foo.handler
+    events:
+      - http:
+          method: GET
+          path: /foo

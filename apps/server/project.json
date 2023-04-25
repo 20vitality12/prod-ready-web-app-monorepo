@@ -9,6 +9,7 @@
 			"outputs": ["{options.outputPath}"],
 			"defaultConfiguration": "production",
 			"options": {
+				"generatePackageJson": true,
 				"target": "node",
 				"compiler": "tsc",
 				"outputPath": "dist/apps/server",
