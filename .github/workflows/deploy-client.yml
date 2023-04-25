@@ -46,6 +46,6 @@ jobs:
     with:
       app: client
       stage: ${{ inputs.stage || needs.stage.outputs.stage }}
-      stack: ${{ needs.stage.outputs.stack }}
+      stack: ${{ needs.stage.outputs.client-stack }}
       tests: ${{ inputs.tests}}
     secrets: inherit
