@@ -1,0 +1,79 @@
+name: _Reusable deploy client
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        required: true
+        type: string
+      stage:
+        required: true
+        type: string
+      stack:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      ##################################################################################################################
+      ###                                             Basic action setup                                             ###
+      ##################################################################################################################
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      ##################################################################################################################
+      ###                                               Build and Test                                               ###
+      ##################################################################################################################
+
+      - name: Build ${{ inputs.app }}
+        run: npx nx build ${{ inputs.app}} --skip-nx-cache
+
+      - name: Test ${{ inputs.app }}
+        run: npx nx test ${{ inputs.app}} --skip-nx-cache
+
+      ##################################################################################################################
+      ###                                             Sync and invalidate                                            ###
+      ##################################################################################################################
+
+      - name: Setup S3 Bucket & CF distributionId
+        run: |
+          echo "bucket=$(aws cloudformation describe-stacks \
+            --stack-name ${{ inputs.stack }} \
+            --query "Stacks[0].Outputs[?OutputKey=='ClientBucket'].OutputValue" \
+            --output text)" >> $GITHUB_ENV
+          echo "distributionId=$(aws cloudformation describe-stacks \
+            --stack-name ${{ inputs.stack }} \
+            --query "Stacks[0].Outputs[?OutputKey=='ClientDistributionId'].OutputValue" \
+            --output text)" >> $GITHUB_ENV
+
+      - name: Upload build to S3
+        run: aws s3 sync ./dist/apps/${{ inputs.app }} s3://${{ env.bucket }}
+
+      - name: Upload build to S3
+        run: aws cloudfront create-invalidation --distribution-id ${{ env.distributionId }} --paths "/*"
+

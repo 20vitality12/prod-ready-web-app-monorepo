@@ -1,0 +1,43 @@
+name: Deploy Client
+
+run-name: ${{ github.workflow }} from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        type: choice
+        description: "stage to deploy"
+        required: true
+        default: develop
+        options:
+          - develop
+          - production
+      branch:
+        description: "Branch, tag or SHA to checkout *(optional)"
+        required: false
+  push:
+    branches:
+      - master
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+#  stage:
+#    uses: ./.github/workflows/_reusable-protect-stage.yml
+#    with:
+#      event_name: ${{ github.event_name }}
+#      stage: ${{ inputs.stage }}
+#      protection: ${{ inputs.protection }}
+
+  client:
+    uses: ./.github/workflows/_reusable-deploy-client.yml
+    with:
+      app: client
+#      stage: ${{ inputs.stage || needs.stage.outputs.stage }}
+#      stack: ${{ needs.stage.outputs.stack }}
+      stage: develop
+      stack: monolith-it-develop-client
+    secrets: inherit

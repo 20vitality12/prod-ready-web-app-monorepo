@@ -8,6 +8,9 @@ tmp
 # dependencies
 node_modules
 
+# env
+.env
+
 # IDEs and editors
 /.idea
 .project
@@ -37,3 +40,7 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Serverless
+.serverless
+.webpack
