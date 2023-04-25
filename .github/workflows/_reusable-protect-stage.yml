@@ -1,0 +1,65 @@
+name: _Reusable protect stage
+
+on:
+  workflow_call:
+    inputs:
+      stage:
+        required: true
+        type: string
+      protection:
+        required: true
+        type: string
+      event_name:
+        required: false
+        type: string
+    outputs:
+      stage:
+        value: ${{ jobs.check.outputs.stage }}
+      ecs-cluster-stack:
+        value: ${{ jobs.check.outputs.ecs-cluster-stack }}
+      client-stack:
+        value: ${{ jobs.check.outputs.client-stack }}
+      server-stack:
+        value: ${{ jobs.check.outputs.server-stack }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      stage: ${{ steps.stage.outputs.stage }}
+      ecs-cluster-stack: ${{ steps.stacks.outputs.ecs-cluster-stack }}
+      client-stack: ${{ steps.stacks.outputs.client-stack }}
+      server-stack: ${{ steps.stacks.outputs.server-stack }}
+    steps:
+
+      # return stage name based on pushed branch
+      - name: Set stage output
+        id: stage
+        run: |
+
+          if [[ ${{ inputs.event_name }} == 'push' ]]; then
+
+            if [[ ${{ github.ref_name }} == 'develop' ]]; then
+              echo "stage=develop" >> $GITHUB_OUTPUT
+            fi
+
+            if [[ ${{ github.ref_name }} == 'master' ]]; then
+              echo "stage=production" >> $GITHUB_OUTPUT
+            fi
+
+          fi
+
+      - name: Set CloudFormation stacks names
+        id: stacks
+        run: |
+          echo "ecs-cluster-stack=${{ env.DOMAIN }}-${{ steps.stage.outputs.stage || inputs.stage }}-ecs-cluster" >> $GITHUB_OUTPUT
+          echo "client-stack=${{ env.DOMAIN }}-${{ steps.stage.outputs.stage || inputs.stage }}-server" >> $GITHUB_OUTPUT
+          echo "server-stack=${{ env.DOMAIN }}-${{ steps.stage.outputs.stage || inputs.stage }}-server" >> $GITHUB_OUTPUT
+
+      - name: Check stage
+        run: |
+
+          if [[ ${{ inputs.stage }} == 'production' && ${{ inputs.protection }} != 'production' ]]; then
+            echo "Production deployment can not be without protection rule!"
+            exit 1
+          fi
