@@ -41,6 +41,7 @@ jobs:
       protection: ${{ inputs.protection }}
 
   client:
+    needs: stage
     uses: ./.github/workflows/_reusable-deploy-client.yml
     with:
       app: client
