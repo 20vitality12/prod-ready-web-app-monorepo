@@ -8,6 +8,7 @@ package:
   individually: true
 
 custom:
+  COMPANY_NAME: monolith-it
   stage: ${opt:stage, env:STAGE, 'develop'}
   serverless-offline:
     httpPort: 3333
@@ -17,26 +18,30 @@ custom:
     linting: false
     tsConfig: 'tsconfig.app.json'
 
-params:
-  production:
-    production: true
-  develop:
-    production: false
-
 provider:
   name: aws
   runtime: nodejs18.x
   stage: ${self:custom.stage}
   endpointType: REGIONAL
   timeout: 20
+  logRetentionInDays: 30
   environment:
-    APP_ENV: ${self:custom.stage}
-    IS_PRODUCTION: ${param:production}
+    STAGE: ${self:custom.stage}
     NODE_OPTIONS: --enable-source-maps
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - ecs:RunTask
+      Resource: "*"
 
 functions:
   foo:
     handler: src/handlers/foo.handler
+    environment:
+      ECS_CLUSTER_ARN: ${cf:${self:custom.COMPANY_NAME}-${self:custom.stage}-ecs-cluster.ClusterName}
+      TASK_DEFINITION_ARN: ${cf:${self:custom.COMPANY_NAME}-${self:custom.stage}-ecs-task.ECSTaskArn}
+      ECS_SECURITY_GROUPS: ${cf:${self:custom.COMPANY_NAME}-${self:custom.stage}-ecs-cluster.ECSSecurityGroupID}
+      ECS_SUBNET_IDS: ${cf:${self:custom.COMPANY_NAME}.SubnetIds}
     events:
       - http:
           method: GET
