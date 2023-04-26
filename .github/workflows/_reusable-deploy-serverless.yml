@@ -60,6 +60,6 @@ jobs:
 
       - name: Deploy ${{ inputs.app }}
         if: ${{ inputs.tests }}
-        run: STAGE=${{ inputs.stage }} npx nx deploy ${{ inputs.app}}
+        run: STAGE=${{ inputs.stage }} npx nx deploy ${{ inputs.app}} --output-style=stream
 
 
