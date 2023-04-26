@@ -27,7 +27,7 @@ provider:
   name: aws
   runtime: nodejs18.x
   stage: ${self:custom.stage}
-  endpointType: regional
+  endpointType: REGIONAL
   timeout: 20
   environment:
     APP_ENV: ${self:custom.stage}
