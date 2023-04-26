@@ -5,6 +5,13 @@ run-name: ${{ github.workflow }} - ${{ inputs.app }} from branch ${{ inputs.bran
 on:
   workflow_dispatch:
     inputs:
+      app:
+        type: choice
+        description: "Serverless app to deploy"
+        required: true
+        default: lambda
+        options:
+          - lambda
       stage:
         type: choice
         description: "Stage to deploy"
@@ -41,7 +48,7 @@ jobs:
     needs: stage
     uses: ./.github/workflows/_reusable-deploy-serverless.yml
     with:
-      app: serverless-lambda
+      app: serverless-${{ inputs.app }}
       stage: ${{ inputs.stage || needs.stage.outputs.stage }}
       tests: ${{ inputs.tests}}
     secrets: inherit
