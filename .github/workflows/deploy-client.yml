@@ -1,4 +1,4 @@
-name: Deploy Client
+name: Deploy client
 
 run-name: ${{ github.workflow }} from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}, [tests - ${{ inputs.tests }}]
 
@@ -23,7 +23,7 @@ on:
         required: true
         default: "not-production"
       branch:
-        description: "Branch, tag or SHA to checkout *(optional)"
+        description: "Branch, Tag or SHA to checkout *(optional)"
         required: false
   push:
     branches:
