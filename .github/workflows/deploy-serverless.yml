@@ -1,6 +1,6 @@
 name: Deploy serverless app
 
-run-name: ${{ github.workflow }} - ${{ inputs.app }} from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}, [tests - ${{ inputs.tests }}]
+run-name: ${{ github.workflow }} "${{ inputs.app }}" from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}, [tests - ${{ inputs.tests }}]
 
 on:
   workflow_dispatch:
