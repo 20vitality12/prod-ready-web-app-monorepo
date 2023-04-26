@@ -1,0 +1,65 @@
+name: _Reusable deploy serverless
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        required: true
+        type: string
+      stage:
+        required: true
+        type: string
+      tests:
+        required: true
+        type: boolean
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      ##################################################################################################################
+      ###                                             Basic action setup                                             ###
+      ##################################################################################################################
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      ##################################################################################################################
+      ###                                                    Test                                                    ###
+      ##################################################################################################################
+
+      - name: Test ${{ inputs.app }}
+        if: ${{ inputs.tests }}
+        run: npx nx test ${{ inputs.app}} --skip-nx-cache
+
+      ##################################################################################################################
+      ###                                              Deploy serverless                                             ###
+      ##################################################################################################################
+
+      - name: Test ${{ inputs.app }}
+        if: ${{ inputs.tests }}
+        run: npx STAGE=${{ inputs.stage }} nx deploy ${{ inputs.app}} --skip-nx-cache
+
+

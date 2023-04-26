@@ -1,0 +1,47 @@
+name: Deploy serverless app - ${{ inputs.app }}
+
+run-name: ${{ github.workflow }} from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}, [tests - ${{ inputs.tests }}]
+
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        type: choice
+        description: "Stage to deploy"
+        required: true
+        default: develop
+        options:
+          - develop
+          - production
+      tests:
+        type: boolean
+        description: "Run tests?"
+        default: true
+        required: true
+      protection:
+        description: "Write production to deploy from master to production"
+        required: true
+        default: "not-production"
+      branch:
+        description: "Branch, Tag or SHA to checkout *(optional)"
+        required: false
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  stage:
+    uses: ./.github/workflows/_reusable-protect-stage.yml
+    with:
+      event_name: ${{ github.event_name }}
+      stage: ${{ inputs.stage }}
+      protection: ${{ inputs.protection }}
+
+  serverless:
+    needs: stage
+    uses: ./.github/workflows/_reusable-deploy-serverless.yml
+    with:
+      app: serverless-lambda
+      stage: ${{ inputs.stage || needs.stage.outputs.stage }}
+      tests: ${{ inputs.tests}}
+    secrets: inherit
