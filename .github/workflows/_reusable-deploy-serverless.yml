@@ -58,8 +58,8 @@ jobs:
       ###                                              Deploy serverless                                             ###
       ##################################################################################################################
 
-      - name: Test ${{ inputs.app }}
+      - name: Deploy ${{ inputs.app }}
         if: ${{ inputs.tests }}
-        run: npx STAGE=${{ inputs.stage }} nx deploy ${{ inputs.app}} --skip-nx-cache
+        run: STAGE=${{ inputs.stage }} npx nx deploy ${{ inputs.app}}
 
 
