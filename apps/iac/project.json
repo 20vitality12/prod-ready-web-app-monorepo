@@ -7,13 +7,13 @@
 		"deploy": {
 			"executor": "@codebrew/nx-aws-cdk:deploy",
 			"options": {
-				"command": "--all --profile monolith"
+				"command": "--all"
 			}
 		},
 		"destroy": {
 			"executor": "@codebrew/nx-aws-cdk:destroy",
 			"options": {
-				"command": "--all --force --profile monolith"
+				"command": "--all --force"
 			}
 		},
 		"lint": {
