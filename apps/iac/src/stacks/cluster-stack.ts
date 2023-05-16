@@ -9,22 +9,23 @@ interface ClusterStackProps extends StackProps {
 
 export class ClusterStack extends Stack {
 	public ecsCluster: ecs.ICluster
-	public ecsSecurityGroup: ec2.SecurityGroup
+	public ecsSecurityGroupId: string
 
 	constructor(scope: Construct, id: string, { vpc }: ClusterStackProps) {
 		super(scope, id)
 
-		this.ecsSecurityGroup = new ec2.SecurityGroup(this, 'ECSSecurityGroup', {
+		const ecsSecurityGroup = new ec2.SecurityGroup(this, 'ECSSecurityGroup', {
 			vpc,
 			securityGroupName: `${id}-ecs-sg`,
 			description: 'main ecs security group',
 		})
+		this.ecsSecurityGroupId = ecsSecurityGroup.securityGroupId
 		this.ecsCluster = new ecs.Cluster(this, 'Cluster', {
 			vpc,
 			clusterName: id,
 		})
 
 		new CfnOutput(this, 'ClusterName', { value: this.ecsCluster.clusterName })
-		new CfnOutput(this, 'ECSSecurityGroupID', { value: this.ecsSecurityGroup.securityGroupId })
+		new CfnOutput(this, 'ECSSecurityGroupID', { value: this.ecsSecurityGroupId })
 	}
 }

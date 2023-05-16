@@ -1,0 +1,22 @@
+name: Provision AWS infra
+
+run-name: ${{ github.workflow }} from branch ${{ github.ref_name }} to stage ${{ inputs.stage }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        type: choice
+        description: "Stage to deploy"
+        required: true
+        default: develop
+        options:
+          - develop
+          - production
+jobs:
+  deploy:
+    uses: ./.github/workflows/_reusable-cdk-deploy.yml
+    with:
+      stage: ${{ inputs.STAGE }}
+      deploy: true
+    secrets: inherit

@@ -18,7 +18,7 @@ interface ServerStackProps {
 	subdomain: string;
 	dbSecretArn: string;
 	ecsCluster: ecs.ICluster;
-	ecsSecurityGroup: ec2.SecurityGroup;
+	ecsSecurityGroupId: string;
 	publicHostedZone: route53.IHostedZone;
 }
 
@@ -32,7 +32,7 @@ export class ServerStack extends Stack {
 		subdomain,
 		dbSecretArn,
 		ecsCluster,
-		ecsSecurityGroup,
+		ecsSecurityGroupId,
 		publicHostedZone
 	}: ServerStackProps) {
 		super(scope, id)
@@ -72,6 +72,7 @@ export class ServerStack extends Stack {
 			domainName,
 			validation: acm.CertificateValidation.fromDns(publicHostedZone),
 		})
+		const ecsSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ECSSecurityGroup', ecsSecurityGroupId);
 		const lbFargate = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'Service', {
 			serviceName: id,
 			cluster: ecsCluster,

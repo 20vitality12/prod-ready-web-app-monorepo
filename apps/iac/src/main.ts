@@ -18,7 +18,7 @@ const { vpc, publicHostedZone} = new VpcStack(app, VPC_NAME)
 
 const { dbSecretArn, instanceIdentifier: dbId } = new PostgresStack(app, `${prefix}-postgres`, { vpc })
 
-const { ecsCluster, ecsSecurityGroup } = new ClusterStack(app, `${prefix}-ecs-cluster`, { vpc })
+const { ecsCluster, ecsSecurityGroupId } = new ClusterStack(app, `${prefix}-ecs-cluster`, { vpc })
 
 new ClientStack(app, `${prefix}-client`, { subdomain: CLIENT_SUBDOMAIN, publicHostedZone })
 
@@ -26,7 +26,7 @@ const { serverInfo } = new ServerStack(app, `${prefix}-server`, {
 	subdomain: SERVER_SUBDOMAIN,
 	dbSecretArn,
 	ecsCluster,
-	ecsSecurityGroup,
+	ecsSecurityGroupId,
 	publicHostedZone
 })
 
