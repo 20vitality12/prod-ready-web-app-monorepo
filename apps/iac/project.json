@@ -13,7 +13,7 @@
 		"destroy": {
 			"executor": "@codebrew/nx-aws-cdk:destroy",
 			"options": {
-				"command": "--all --force"
+				"command": "--all --force --profile monolith"
 			}
 		},
 		"lint": {

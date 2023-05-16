@@ -15,12 +15,6 @@ on:
     outputs:
       stage:
         value: ${{ jobs.check.outputs.stage }}
-      ecs-cluster-stack:
-        value: ${{ jobs.check.outputs.ecs-cluster-stack }}
-      client-stack:
-        value: ${{ jobs.check.outputs.client-stack }}
-      server-stack:
-        value: ${{ jobs.check.outputs.server-stack }}
 
 jobs:
   check:
@@ -28,8 +22,6 @@ jobs:
     outputs:
       stage: ${{ steps.stage.outputs.stage }}
       ecs-cluster-stack: ${{ steps.stacks.outputs.ecs-cluster-stack }}
-      client-stack: ${{ steps.stacks.outputs.client-stack }}
-      server-stack: ${{ steps.stacks.outputs.server-stack }}
     steps:
 
       # return stage name based on pushed branch
@@ -48,13 +40,6 @@ jobs:
             fi
 
           fi
-
-      - name: Set CloudFormation stacks names
-        id: stacks
-        run: |
-          echo "ecs-cluster-stack=${{ vars.COMPANY_NAME }}-${{ steps.stage.outputs.stage || inputs.stage }}-ecs-cluster" >> $GITHUB_OUTPUT
-          echo "client-stack=${{ vars.COMPANY_NAME }}-${{ steps.stage.outputs.stage || inputs.stage }}-client" >> $GITHUB_OUTPUT
-          echo "server-stack=${{ vars.COMPANY_NAME }}-${{ steps.stage.outputs.stage || inputs.stage }}-server" >> $GITHUB_OUTPUT
 
       - name: Check stage
         run: |

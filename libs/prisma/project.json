@@ -8,7 +8,7 @@
 			"executor": "nx:run-commands",
 			"options": {
 				"command": "ts-node prisma/seed.ts",
-				"cwd": "libs/prisma"
+				"cwd": "libs/prisma/src"
 			}
 		},
 		"generate:client": {
@@ -16,7 +16,7 @@
 			"outputs": [],
 			"options": {
 				"command": "prisma generate",
-				"cwd": "libs/prisma"
+				"cwd": "libs/prisma/src"
 			}
 		},
 		"migrate:dev": {
@@ -24,7 +24,7 @@
 			"outputs": [],
 			"options": {
 				"command": "prisma migrate dev",
-				"cwd": "libs/prisma"
+				"cwd": "libs/prisma/src"
 			}
 		},
 		"migrate:create": {
@@ -32,7 +32,7 @@
 			"outputs": [],
 			"options": {
 				"command": "prisma migrate dev --create-only",
-				"cwd": "libs/prisma"
+				"cwd": "libs/prisma/src"
 			}
 		},
 		"migrate:deploy": {
@@ -40,7 +40,7 @@
 			"outputs": [],
 			"options": {
 				"command": "prisma migrate deploy",
-				"cwd": "libs/prisma"
+				"cwd": "libs/prisma/src"
 			}
 		},
 		"migrate:reset": {
@@ -48,7 +48,7 @@
 			"outputs": [],
 			"options": {
 				"command": "prisma migrate reset",
-				"cwd": "libs/prisma"
+				"cwd": "libs/prisma/src"
 			}
 		},
 		"studio": {
@@ -56,7 +56,7 @@
 			"outputs": [],
 			"options": {
 				"command": "prisma studio",
-				"cwd": "libs/prisma"
+				"cwd": "libs/prisma/src"
 			}
 		},
 		"lint": {

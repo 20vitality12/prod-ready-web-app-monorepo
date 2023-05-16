@@ -6,6 +6,8 @@ export class AppService {
 	private readonly logger = new Logger(AppService.name);
 
 	async getData(): Promise<{ message: string, requestId: string }> {
-		return { message: 'Welcome to server!', requestId: uuid() };
+		const response = { message: 'Welcome to server!', requestId: uuid() }
+		this.logger.log(response)
+		return response
 	}
 }

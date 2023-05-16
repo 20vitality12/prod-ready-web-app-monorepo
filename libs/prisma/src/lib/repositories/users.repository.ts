@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
+import { Users, Prisma } from '@prisma/client'
 import { PrismaService } from '../prisma.service'
-import { Users, CreateUserDto, UpdateUserDto } from '@monolith/contracts'
 
 @Injectable()
 export class UsersRepository {
@@ -9,8 +9,8 @@ export class UsersRepository {
 
 	private users = this.prisma.users
 
-	async create(createUserDto: CreateUserDto): Promise<Users> {
-		return this.users.create({ data: createUserDto })
+	async create(data: Prisma.UsersCreateInput): Promise<Users> {
+		return this.users.create({ data })
 	}
 
 	async findAll(): Promise<Users[]> {
@@ -18,21 +18,14 @@ export class UsersRepository {
 	}
 
 	async findOne(id: string): Promise<Users | null> {
-		return this.users.findFirst({
-			where: { id },
-		})
+		return this.users.findFirst({ where: { id } })
 	}
 
-	async update(id: string, updateUserDto: UpdateUserDto): Promise<Users> {
-		return this.users.update({
-			data: updateUserDto,
-			where: { id },
-		})
+	async update(id: string, data: Prisma.UsersUpdateInput): Promise<Users> {
+		return this.users.update({ data, where: { id } })
 	}
 
 	async remove(id: string): Promise<Users> {
-		return this.users.delete({
-			where: { id },
-		})
+		return this.users.delete({ where: { id } })
 	}
 }

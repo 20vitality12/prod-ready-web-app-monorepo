@@ -1,10 +1,10 @@
-import { stageType } from '@monolith/contracts'
 import { PrismaClient } from '@prisma/client'
+import { environment } from './environment'
 
 const prisma = new PrismaClient()
 
 async function main() {
-	if (process.env.STAGE as stageType !== 'develop') return
+	if (environment.STAGE !== 'develop') return
 
 	const alice = await prisma.users.upsert({
 		where: { email: 'alice@prisma.io' },

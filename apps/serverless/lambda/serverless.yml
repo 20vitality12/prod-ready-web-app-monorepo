@@ -36,13 +36,13 @@ provider:
 
 functions:
   foo:
-    handler: src/handlers/foo.handler
+    handler: src/main.handler
     environment:
+      TASK_DEFINITION_ARN: ${cf:${self:custom.COMPANY_NAME}-${self:custom.stage}-ecs-task.EcsTaskArn}
       ECS_CLUSTER_ARN: ${cf:${self:custom.COMPANY_NAME}-${self:custom.stage}-ecs-cluster.ClusterName}
-      TASK_DEFINITION_ARN: ${cf:${self:custom.COMPANY_NAME}-${self:custom.stage}-ecs-task.ECSTaskArn}
       ECS_SECURITY_GROUPS: ${cf:${self:custom.COMPANY_NAME}-${self:custom.stage}-ecs-cluster.ECSSecurityGroupID}
-      ECS_SUBNET_IDS: ${cf:${self:custom.COMPANY_NAME}.SubnetIds}
+      ECS_SUBNET_IDS: ${cf:${self:custom.COMPANY_NAME}-vpc.PublicSubnetIds}
     events:
       - http:
           method: GET
-          path: /foo
+          path: /start-ecs-task

@@ -1,0 +1,163 @@
+name: Deploy server
+
+run-name: ${{ github.workflow }} from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}, [tests - ${{ inputs.tests }}, migrations - ${{ inputs.migrations }}]
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+    inputs:
+      stage:
+        type: choice
+        description: "Stage to deploy"
+        required: true
+        default: develop
+        options:
+          - develop
+          - production
+      tests:
+        type: boolean
+        description: "Run tests?"
+        default: true
+        required: true
+      migrations:
+        type: boolean
+        description: "Run migrations?"
+        default: true
+        required: true
+      protection:
+        description: "Write production to deploy from master to production"
+        required: true
+        default: "not-production"
+      branch:
+        description: "Branch, Tag or SHA to checkout *(optional)"
+        required: false
+      image:
+        description: "Write docker tag to deploy"
+        required: false
+
+
+concurrency:
+  group: ${{ github.workflow }}
+
+env:
+  app: server
+  stack: ${{ vars.COMPANY_NAME }}-${{ inputs.stage }}-server
+
+jobs:
+  stage:
+    uses: ./.github/workflows/_reusable-protect-stage.yml
+    with:
+      event_name: ${{ github.event_name }}
+      stage: ${{ inputs.stage }}
+      protection: ${{ inputs.protection }}
+
+  build-test-migrate-docker-build:
+    needs: stage
+    if: ${{ inputs.image == '' }}
+    outputs:
+      image: ${{ steps.build-image.outputs.image }}
+    runs-on: ubuntu-latest
+    steps:
+      ##################################################################################################################
+      ###                                             Basic action setup                                             ###
+      ##################################################################################################################
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get secrets
+        uses: aws-actions/aws-secretsmanager-get-secrets@v1
+        with:
+          secret-ids: |
+            POSTGRES,${{ inputs.stage || needs.stage.outputs.stage }}/postgres
+          parse-json-secrets: true
+
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      ##################################################################################################################
+      ###                                               Build and Test                                               ###
+      ##################################################################################################################
+
+      - name: Build ${{ env.app }}
+        run: npx nx build ${{ env.app }}
+
+      - name: Test ${{ env.app }}
+        if: (inputs.tests == 'true') || (github.event_name == 'push')
+        run: npx nx test ${{ env.app }}
+
+      ##################################################################################################################
+      ###                                          Docker build and ecr push                                         ###
+      ##################################################################################################################
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set ecr repository
+        run: echo "ECR_REPOSITORY=$(aws cloudformation describe-stacks \
+          --stack-name ${{ env.stack }} \
+          --query "Stacks[0].Outputs[?OutputKey=='RepositoryName'].OutputValue" \
+          --output text)" >> "$GITHUB_ENV"
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            -f ./apps/${{ env.app }}/Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+
+      ##################################################################################################################
+      ###                                               Prisma migrate                                               ###
+      ##################################################################################################################
+
+      - name: Run prisma migrations
+        env:
+          DATABASE_URL: ${{ env.POSTGRES_DATABASE_URL }}
+        run: npx nx migrate:deploy prisma --output-style=stream
+
+  existing-image:
+    needs: stage
+    uses: ./.github/workflows/_reusable-deploy-service.yml
+    if: ${{ inputs.image }}
+    with:
+      stage: ${{ inputs.stage }}
+      app: ${{ env.app }}
+      image: ${{ inputs.image }}
+    secrets: inherit
+
+  built-image:
+    needs: [ stage, build-test-migrate-docker-build ]
+    uses: ./.github/workflows/_reusable-deploy-service.yml
+    if: ${{ inputs.image == '' }}
+    with:
+      stage: ${{ inputs.stage || needs.stage.outputs.stage }}
+      app: ${{ env.app }}
+      image: ${{ github.sha }}
+    secrets: inherit

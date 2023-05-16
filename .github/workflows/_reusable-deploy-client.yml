@@ -9,15 +9,14 @@ on:
       stage:
         required: true
         type: string
-      stack:
-        required: true
-        type: string
       tests:
         required: true
         type: boolean
 
 jobs:
   deploy:
+    env:
+      stack: ${{ vars.COMPANY_NAME }}-${{ inputs.stage }}-${{ inputs.app }}
     runs-on: ubuntu-latest
     steps:
       ##################################################################################################################
@@ -67,12 +66,12 @@ jobs:
       - name: Setup S3 Bucket & CF distributionId
         run: |
           echo "bucket=$(aws cloudformation describe-stacks \
-            --stack-name ${{ inputs.stack }} \
-            --query "Stacks[0].Outputs[?OutputKey=='ClientBucket'].OutputValue" \
+            --stack-name ${{ env.stack }} \
+            --query "Stacks[0].Outputs[?OutputKey=='BucketName'].OutputValue" \
             --output text)" >> $GITHUB_ENV
           echo "distributionId=$(aws cloudformation describe-stacks \
-            --stack-name ${{ inputs.stack }} \
-            --query "Stacks[0].Outputs[?OutputKey=='ClientDistributionId'].OutputValue" \
+            --stack-name ${{ env.stack }} \
+            --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" \
             --output text)" >> $GITHUB_ENV
 
       - name: Upload build to S3

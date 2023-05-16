@@ -14,8 +14,9 @@ describe('AppService', () => {
 	})
 
 	describe('getData', () => {
-		it('should return "Hello API"', () => {
-			expect(service.getData()).toEqual({ message: 'Hello API' })
+		it('should return "Welcome to server!"', async () => {
+			const response = await service.getData()
+			expect(response.message).toEqual('Welcome to server!')
 		})
 	})
 })

@@ -1,0 +1,72 @@
+name: _Reusable server deploy
+
+on:
+  workflow_call:
+    inputs:
+      stage:
+        required: true
+        type: string
+      app:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    env:
+      stack: ${{ vars.COMPANY_NAME }}-${{ inputs.stage }}-${{ inputs.app }}
+      ecs-cluster-stack: ${{ vars.COMPANY_NAME }}-${{ inputs.stage }}-ecs-cluster
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Setup env
+        run: |
+          echo "CLUSTER=$(aws cloudformation describe-stacks \
+            --stack-name ${{ ecs-cluster-stack }} \
+            --query "Stacks[0].Outputs[?OutputKey=='ClusterName'].OutputValue" \
+            --output text)" >> $GITHUB_ENV
+          echo "SERVICE=$(aws cloudformation describe-stacks \
+            --stack-name ${{ env.stack }} \
+            --query "Stacks[0].Outputs[?OutputKey=='ServiceName'].OutputValue" \
+            --output text)" >> $GITHUB_ENV
+          echo "TASK_FAMILY=$(aws cloudformation describe-stacks \
+            --stack-name ${{ env.stack }} \
+            --query "Stacks[0].Outputs[?OutputKey=='TaskFamilyName'].OutputValue" \
+            --output text)" >> $GITHUB_ENV
+          echo "ECR_REPOSITORY=$(aws cloudformation describe-stacks \
+            --stack-name ${{ env.stack }} \
+            --query "Stacks[0].Outputs[?OutputKey=='RepositoryName'].OutputValue" \
+            --output text)" >> "$GITHUB_ENV"
+
+      - name: Download task definition
+        run: aws ecs describe-task-definition --task-definition ${{ env.TASK_FAMILY }} --query taskDefinition > task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        with:
+          task-definition: task-definition.json
+          container-name: app
+          image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ inputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.SERVICE }}
+          cluster: ${{ env.CLUSTER }}
+          wait-for-service-stability: true

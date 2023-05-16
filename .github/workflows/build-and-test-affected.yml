@@ -1,0 +1,47 @@
+name: Build and Test affected projects
+
+run-name: Build-Test "${{ github.ref_name }}" affected projects
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build-test-affected:
+    runs-on: ubuntu-latest
+    steps:
+      ##################################################################################################################
+      ###                                             Basic action setup                                             ###
+      ##################################################################################################################
+
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+
+      - uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: 'master'
+
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      ##################################################################################################################
+      ###                                             Build and test                                                 ###
+      ##################################################################################################################
+
+      - name: Build affected
+        run: npm run build:affected
+
+      - name: Test affected
+        run: npm run test:affected

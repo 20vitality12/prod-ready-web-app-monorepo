@@ -1,13 +1,17 @@
-name: Deploy client
+name: Deploy ecs task
 
-run-name: ${{ github.workflow }} from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}, [tests - ${{ inputs.tests }}]
+run-name: ${{ github.workflow }} "${{ inputs.app }}" from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}, [tests - ${{ inputs.tests }}]
 
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch:
     inputs:
+      app:
+        type: choice
+        description: "Ecs app to deploy"
+        required: true
+        default: ecs-task
+        options:
+          - ecs-task
       stage:
         type: choice
         description: "Stage to deploy"
@@ -29,9 +33,6 @@ on:
         description: "Branch, Tag or SHA to checkout *(optional)"
         required: false
 
-concurrency:
-  group: ${{ github.workflow }}
-
 jobs:
   stage:
     uses: ./.github/workflows/_reusable-protect-stage.yml
@@ -40,11 +41,11 @@ jobs:
       stage: ${{ inputs.stage }}
       protection: ${{ inputs.protection }}
 
-  client:
+  deploy:
     needs: stage
-    uses: ./.github/workflows/_reusable-deploy-client.yml
+    uses: ./.github/workflows/_reusable-deploy-ecs-task.yml
     with:
-      app: client
+      app: ${{ inputs.app }}
       stage: ${{ inputs.stage || needs.stage.outputs.stage }}
       tests: ${{ inputs.tests}}
     secrets: inherit

@@ -4,6 +4,9 @@
 dist
 tmp
 /out-tsc
+**/generated
+**/swagger
+**/сoverage
 
 # dependencies
 node_modules

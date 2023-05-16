@@ -14,9 +14,10 @@ describe('AppController', () => {
 	})
 
 	describe('getData', () => {
-		it('should return "Hello API"', () => {
+		it('should return "Welcome to server!"', async () => {
 			const appController = app.get<AppController>(AppController)
-			expect(appController.getData()).toEqual({ message: 'Hello API' })
+			const response = await appController.getData()
+			expect(response.message).toEqual('Welcome to server!')
 		})
 	})
 })

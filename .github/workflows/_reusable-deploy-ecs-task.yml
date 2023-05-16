@@ -1,4 +1,4 @@
-name: _Reusable deploy serverless
+name: _Reusable deploy ecs task
 
 on:
   workflow_call:
@@ -15,9 +15,10 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
     env:
-      app: serverless-${{ inputs.app ))
+      app: tasks-${{ inputs.app }}
+      stack: ${{ vars.COMPANY_NAME }}-${{ inputs.stage }}-${{ inputs.app }}
+    runs-on: ubuntu-latest
     steps:
       ##################################################################################################################
       ###                                             Basic action setup                                             ###
@@ -49,19 +50,44 @@ jobs:
         run: npm ci
 
       ##################################################################################################################
-      ###                                                    Test                                                    ###
+      ###                                               Build and Test                                               ###
       ##################################################################################################################
+
+#      - name: Generate prisma client
+#        run: npx nx generate:client prisma
+
+      - name: Build ${{ env.app }}
+        run: npx nx build ${{ env.app}} --skip-nx-cache
 
       - name: Test ${{ env.app }}
         if: ${{ inputs.tests }}
         run: npx nx test ${{ env.app}} --skip-nx-cache
 
       ##################################################################################################################
-      ###                                              Deploy serverless                                             ###
+      ###                                              Deploy ecs tasks                                              ###
       ##################################################################################################################
 
-      - name: Deploy ${{ env.app }}
-        if: ${{ inputs.tests }}
-        run: STAGE=${{ inputs.stage }} npx nx deploy ${{ env.app}} --output-style=stream
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set ecr repository
+        run: echo "ECR_REPOSITORY=$(aws cloudformation describe-stacks \
+          --stack-name ${{ env.stack }} \
+          --query "Stacks[0].Outputs[?OutputKey=='RepositoryName'].OutputValue" \
+          --output text)" >> "$GITHUB_ENV"
+
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            -f ./apps/${{ env.app }}/Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+          echo "IMAGE_TAG=$IMAGE_TAG"
+
 
 

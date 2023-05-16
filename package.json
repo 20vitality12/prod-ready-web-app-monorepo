@@ -9,11 +9,15 @@
 		"build:affected": "nx affected --target=build --output-style=stream",
 		"test:all": "nx run-many --target=test --all --output-style=stream --skip-nx-cache",
 		"test:affected": "nx affected --target=test --output-style=stream",
-		"test:coverage": "nx run-many --target=test --coverage --all --output-style=stream",
 		"docker:compose:up:dev": "docker-compose -f ./docker-compose.yml up -d --build",
-		"docker:compose:down:dev": "docker-compose -f ./docker-compose.yml down --remove-orphans"
+		"docker:compose:down:dev": "docker-compose -f ./docker-compose.yml down --remove-orphans",
+		"serve:server-main": "nx generate:client prisma && npm run docker:compose:up:dev && nx migrate:deploy prisma && nx seed prisma && nx serve server"
 	},
 	"private": true,
+	"prisma": {
+		"schema": "libs/prisma/src/schema.prisma",
+		"seed": "ts-node libs/prisma/src/seed.ts"
+	},
 	"devDependencies": {
 		"@codebrew/nx-aws-cdk": "^1.0.3",
 		"@commitlint/cli": "^17.6.1",
@@ -23,6 +27,7 @@
 		"@nestjs/schematics": "^9.0.0",
 		"@nestjs/testing": "^9.0.0",
 		"@nrwl/cypress": "15.9.2",
+		"@nrwl/esbuild": "15.9.2",
 		"@nrwl/eslint-plugin-nx": "15.9.2",
 		"@nrwl/jest": "15.9.2",
 		"@nrwl/js": "15.9.2",
@@ -66,7 +71,7 @@
 		"nx": "15.9.2",
 		"pino-pretty": "^10.0.0",
 		"prettier": "^2.6.2",
-		"prisma": "^4.12.0",
+		"prisma": "^4.14.0",
 		"react-test-renderer": "18.2.0",
 		"sass": "^1.55.0",
 		"serverless": "^3.27.0",
@@ -84,10 +89,10 @@
 		"@nestjs/common": "^9.0.0",
 		"@nestjs/core": "^9.0.0",
 		"@nestjs/platform-express": "^9.0.0",
-		"@nestjs/swagger": "^6.3.0",
-		"@prisma/client": "^4.12.0",
+		"@prisma/client": "^4.14.0",
 		"aws-cdk-lib": "^2.76.0",
 		"axios": "^1.0.0",
+		"cdk-ecr-deployment": "^2.5.6",
 		"constructs": "^10.2.1",
 		"nestjs-pino": "^3.1.2",
 		"pino-http": "^8.3.3",
