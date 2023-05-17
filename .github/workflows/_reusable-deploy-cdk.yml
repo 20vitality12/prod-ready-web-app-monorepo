@@ -58,8 +58,8 @@ jobs:
 
       - name: deploy infra
         if : ${{ inputs.DEPLOY }}
-        run: npx nx run server-iac:deploy
+        run: npx nx run iac:deploy
 
       - name: destroy infra
         if: ${{ inputs.DESTROY }}
-        run: npx nx run server-iac:destroy
+        run: npx nx run iac:destroy
