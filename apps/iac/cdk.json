@@ -1,6 +1,6 @@
 {
 	"app": "npx ts-node src/main.ts",
-	"output": "../../dist/apps/iac",
+	"output": "../../cdk",
 	"requireApproval": "never",
 	"context": {
 		"aws-cdk:enableDiffNoFail": "true"

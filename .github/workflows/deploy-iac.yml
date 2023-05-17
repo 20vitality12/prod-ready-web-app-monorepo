@@ -15,7 +15,7 @@ on:
           - production
 jobs:
   deploy:
-    uses: ./.github/workflows/_reusable-cdk-deploy.yml
+    uses: ./.github/workflows/_reusable-deploy-cdk.yml
     with:
       stage: ${{ inputs.STAGE }}
       deploy: true
