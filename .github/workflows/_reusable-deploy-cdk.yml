@@ -53,6 +53,9 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Install aws-cdk
+        run: sudo npm install -g aws-cdk
+
       - name: Add dist to ignore
         run: echo dist/ >> .dockerignore
 
