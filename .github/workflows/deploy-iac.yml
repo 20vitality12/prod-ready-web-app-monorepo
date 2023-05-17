@@ -1,4 +1,4 @@
-name: Provision AWS infra
+name: Deploy AWS infra
 
 run-name: ${{ github.workflow }} from branch ${{ github.ref_name }} to stage ${{ inputs.stage }}
 
