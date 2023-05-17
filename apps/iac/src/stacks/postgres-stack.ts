@@ -35,7 +35,7 @@ export class PostgresStack extends Stack {
 			storageType: StorageType.GP2,
 			allocatedStorage: 20,
 			maxAllocatedStorage: 100,
-			credentials: rds.Credentials.fromGeneratedSecret(COMPANY_NAME, { secretName: `${STAGE}/postgres` }),
+			credentials: rds.Credentials.fromGeneratedSecret(COMPANY_NAME.replace('-', '_'), { secretName: `${STAGE}/postgres` }),
 			instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
 			databaseName: 'postgres',
 			multiAz: false,
