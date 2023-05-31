@@ -60,9 +60,9 @@ jobs:
         run: echo dist/ >> .dockerignore
 
       - name: deploy infra
-        if : ${{ inputs.DEPLOY }}
+        if : ${{ inputs.deploy }}
         run: npx nx run iac:deploy
 
       - name: destroy infra
-        if: ${{ inputs.DESTROY }}
+        if: ${{ inputs.destroy }}
         run: npx nx run iac:destroy
