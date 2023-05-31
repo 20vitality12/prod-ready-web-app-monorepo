@@ -13,6 +13,11 @@ on:
         options:
           - develop
           - production
+    assets:
+      type: boolean
+      description: "Build assets?"
+      default: false
+      required: true
     protection:
       description: "Write production to deploy from master to production"
       required: true
@@ -32,4 +37,5 @@ jobs:
     with:
       stage: ${{ inputs.stage }}
       deploy: true
+      assets: ${{ inputs.assets }}
     secrets: inherit

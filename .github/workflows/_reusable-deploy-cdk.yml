@@ -10,6 +10,9 @@ on:
         type: string
       destroy:
         type: string
+      assets:
+        required: true
+        type: boolean
 env:
   STAGE: ${{ inputs.stage }}
   DOMAIN: monolith-it.click
@@ -22,7 +25,7 @@ env:
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   # Remove after first successful deployment
-  BUILD_ASSETS: true
+  BUILD_ASSETS: ${{ inputs.assets }}
 
 jobs:
   aws_cdk:
