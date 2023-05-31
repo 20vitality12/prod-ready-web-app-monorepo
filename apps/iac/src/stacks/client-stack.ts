@@ -1,6 +1,6 @@
 import { environment } from '../environment'
 import { Construct } from 'constructs'
-import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib'
+import { CfnOutput, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront'
@@ -29,6 +29,8 @@ export class ClientStack extends Stack {
 					allowedHeaders: ['*'],
 				},
 			],
+			removalPolicy: RemovalPolicy.DESTROY,
+			autoDeleteObjects: true
 		})
 
 		const originAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity')

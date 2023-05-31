@@ -22,7 +22,7 @@ env:
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   # Remove after first successful deployment
-  INITIAL_PROVISION: true
+  BUILD_ASSETS: true
 
 jobs:
   aws_cdk:

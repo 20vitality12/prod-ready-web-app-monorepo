@@ -21,6 +21,8 @@ export class EcsTaskStack extends Stack {
 		const repository = new ecr.Repository(this, 'EcsTaskRepository', {
 			repositoryName: id,
 			lifecycleRules: [{ maxImageCount: 3 }],
+			removalPolicy: RemovalPolicy.DESTROY,
+			autoDeleteImages: true,
 		})
 
 		taskDefinition.addContainer('AppContainer', {

@@ -14,7 +14,7 @@ export class VpcStack extends Stack {
 
 		const { HOSTED_ZONE_ID: hostedZoneId, DOMAIN: zoneName } = environment
 
-		this.vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2, vpcName: id })
+		this.vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 1, vpcName: id, natGateways: 0 })
 		this.publicHostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'PublicHostedZone', {
 			hostedZoneId,
 			zoneName,

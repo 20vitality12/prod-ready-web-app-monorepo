@@ -19,7 +19,7 @@ import { stageType as stageType } from '@monolith/contracts'
 // if (!COMPANY_NAME) throw new Error('COMPANY_NAME is undefined')
 
 // const IS_PRODUCTION = process.env['STAGE'] as stageType === 'production'
-// const IS_INITIAL_PROVISION = process.env['INITIAL_PROVISION'] === 'true'
+// const BUILD_ASSETS = process.env['BUILD_ASSETS'] === 'true'
 
 
 const STAGE = 'develop' as stageType
@@ -28,7 +28,7 @@ const SERVER_SUBDOMAIN='server'
 const CLIENT_SUBDOMAIN='client'
 const HOSTED_ZONE_ID='Z04759982J8OLX7XWH4GB'
 const COMPANY_NAME='monolith-it'
-const IS_INITIAL_PROVISION = true
+const BUILD_ASSETS = true
 const IS_PRODUCTION = false
 
 const getSubdomainByStage = (domain: string): string => STAGE === 'production' ? domain : `${domain}.${STAGE}`
@@ -42,5 +42,5 @@ export const environment = {
 	STACK_NAME_PREFIX: `${COMPANY_NAME}-${STAGE}`,
 	IS_PRODUCTION,
 	VPC_NAME: `${COMPANY_NAME}-vpc`,
-	IS_INITIAL_PROVISION,
+	BUILD_ASSETS,
 }

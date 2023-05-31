@@ -1,7 +1,7 @@
 import { environment } from '../environment'
 import { Construct } from 'constructs'
-import { CfnOutput, Stack } from 'aws-cdk-lib'
 import * as cdk from 'aws-cdk-lib'
+import { CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as ecs from 'aws-cdk-lib/aws-ecs'
 import * as ecs_patterns from 'aws-cdk-lib/aws-ecs-patterns'
@@ -10,9 +10,9 @@ import * as iam from 'aws-cdk-lib/aws-iam'
 import * as route53 from 'aws-cdk-lib/aws-route53'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
-import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
-import * as ecrdeploy from 'cdk-ecr-deployment';
-import * as path from 'path';
+import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets'
+import * as ecrdeploy from 'cdk-ecr-deployment'
+import * as path from 'path'
 
 interface ServerStackProps {
 	subdomain: string;
@@ -37,16 +37,18 @@ export class ServerStack extends Stack {
 	}: ServerStackProps) {
 		super(scope, id)
 
-		const { STAGE, DOMAIN, IS_INITIAL_PROVISION } = environment
+		const { STAGE, DOMAIN, BUILD_ASSETS } = environment
 
 		const dbSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'DBSecret', dbSecretArn)
 
 		const repository = new ecr.Repository(this, 'EcrRepository', {
 			repositoryName: `${String(subdomain).replace('.', '-')}`,
 			lifecycleRules: [{ maxImageCount: 3 }],
+			removalPolicy: RemovalPolicy.DESTROY,
+			autoDeleteImages: true,
 		})
 
-		if (IS_INITIAL_PROVISION) {
+		if (BUILD_ASSETS) {
 			const image = new DockerImageAsset(this, 'Image', {
 				directory: path.join(__dirname, '../../../../'),
 				file: 'Dockerfile',

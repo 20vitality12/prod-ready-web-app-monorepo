@@ -9,7 +9,7 @@ import { UsersController, UsersModule, UsersService } from './users'
 @Module({
 	imports: [
 		LoggerModule.forRoot({
-			pinoHttp: environment.IS_DEVELOP
+			pinoHttp: environment.IS_LOCAL
 				? {
 					transport: {
 						target: 'pino-pretty',
