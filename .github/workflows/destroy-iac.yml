@@ -31,4 +31,5 @@ jobs:
     with:
       stage: ${{ inputs.stage }}
       destroy: true
+      assets: false
     secrets: inherit
