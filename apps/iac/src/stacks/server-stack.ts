@@ -111,6 +111,7 @@ export class ServerStack extends Stack {
 					POSTGRES_DB: ecs.Secret.fromSecretsManager(dbSecret, 'dbname'),
 				},
 			},
+			assignPublicIp: true,
 			publicLoadBalancer: true,
 		})
 
