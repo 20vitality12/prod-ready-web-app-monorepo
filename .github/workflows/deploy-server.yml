@@ -42,7 +42,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ inputs.stage || 'push' }}
 
 env:
-  app: server
+  APP: server
   stack: ${{ vars.COMPANY_NAME }}-${{ inputs.stage }}-server
 
 jobs:
@@ -100,12 +100,12 @@ jobs:
       ###                                               Build and Test                                               ###
       ##################################################################################################################
 
-      - name: Build $app
-        run: npx nx build ${{ env.app }}
+      - name: Build ${{ env.APP }}
+        run: npx nx build ${{ env.APP }}
 
-      - name: Test $app
+      - name: Test ${{ env.APP }}
         if: (inputs.tests == 'true') || (github.event_name == 'push')
-        run: npx nx test ${{ env.app }}
+        run: npx nx test ${{ env.APP }}
 
       ##################################################################################################################
       ###                                          Docker build and ecr push                                         ###
@@ -127,7 +127,7 @@ jobs:
           docker build \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            -f ./apps/${{ env.app }}/Dockerfile .
+            -f ./apps/${{ env.APP }}/Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
       ##################################################################################################################
@@ -145,7 +145,7 @@ jobs:
     if: ${{ inputs.image }}
     with:
       stage: ${{ inputs.stage }}
-      app: ${{ env.app }}
+      app: ${{ env.APP }}
       image: ${{ inputs.image }}
     secrets: inherit
 
@@ -155,6 +155,6 @@ jobs:
     if: ${{ inputs.image == '' }}
     with:
       stage: ${{ inputs.stage || needs.stage.outputs.stage }}
-      app: ${{ env.app }}
+      app: ${{ env.APP }}
       image: ${{ github.sha }}
     secrets: inherit
