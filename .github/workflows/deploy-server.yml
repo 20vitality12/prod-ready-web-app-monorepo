@@ -148,7 +148,7 @@ jobs:
     if: ${{ inputs.image }}
     with:
       stage: ${{ inputs.stage }}
-      app: ${{ env.app }}
+      app: $app
       image: ${{ inputs.image }}
     secrets: inherit
 
@@ -158,6 +158,6 @@ jobs:
     if: ${{ inputs.image == '' }}
     with:
       stage: ${{ inputs.stage || needs.stage.outputs.stage }}
-      app: ${{ env.app }}
+      app: $app
       image: ${{ github.sha }}
     secrets: inherit
