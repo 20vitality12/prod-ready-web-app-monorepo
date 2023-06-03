@@ -57,11 +57,11 @@ jobs:
 #        run: npx nx generate:client prisma
 
       - name: Build $app
-        run: npx nx build ${{ env.app}} --skip-nx-cache
+        run: npx nx build ${{ env.app }} --skip-nx-cache
 
       - name: Test $app
         if: ${{ inputs.tests }}
-        run: npx nx test ${{ env.app}} --skip-nx-cache
+        run: npx nx test ${{ env.app }} --skip-nx-cache
 
       ##################################################################################################################
       ###                                              Deploy ecs tasks                                              ###
@@ -82,7 +82,7 @@ jobs:
           docker build \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            -f ./apps/${{ env.app }}/Dockerfile .
+            -f ./apps/tasks/${{ inputs.app }}/Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
           echo "IMAGE_TAG=$IMAGE_TAG"
 
