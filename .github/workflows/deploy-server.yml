@@ -116,8 +116,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Set ecr repository
-        run: echo "ECR_REPOSITORY=$(aws cloudformation describe-stacks \
-          --stack-name ${{ env.stack }} \
+        run: echo "ECR_REPOSITORY=$(aws cloudformation describe-stacks --stack-name ${{ env.stack }} \
           --query "Stacks[0].Outputs[?OutputKey=='RepositoryName'].OutputValue" \
           --output text)" >> "$GITHUB_ENV"
 
