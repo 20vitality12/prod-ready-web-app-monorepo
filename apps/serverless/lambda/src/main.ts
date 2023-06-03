@@ -1,5 +1,5 @@
 import { environment } from './environment'
-import { ECS } from 'aws-sdk'
+import { ECS } from '@aws-sdk/client-ecs'
 
 export const handler = async () => {
 	const {
@@ -10,8 +10,6 @@ export const handler = async () => {
 		ECS_SECURITY_GROUPS: securityGroups,
 		ECS_SUBNET_IDS: subnets,
 	} = environment
-
-	console.log(environment)
 
 	const ecs: ECS = new ECS({ region: AWS_REGION })
 
@@ -36,7 +34,7 @@ export const handler = async () => {
 					},
 				],
 			},
-		}).promise()
+		})
 	} catch (error: any) {
 		console.error({ message: error.message, error })
 	}

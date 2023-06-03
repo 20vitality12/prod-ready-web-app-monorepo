@@ -122,7 +122,7 @@ export class ServerStack extends Stack {
 				effect: iam.Effect.ALLOW,
 			}),
 		)
-
+		lbFargate.taskDefinition.applyRemovalPolicy(RemovalPolicy.DESTROY)
 		lbFargate.targetGroup.setAttribute('deregistration_delay.timeout_seconds', '5')
 		lbFargate.targetGroup.configureHealthCheck({
 			enabled: true,

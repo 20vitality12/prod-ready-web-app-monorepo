@@ -20,7 +20,6 @@ custom:
 
 provider:
   name: aws
-#  profile: monolith
   runtime: nodejs18.x
   stage: ${self:custom.stage}
   endpointType: REGIONAL
@@ -30,10 +29,9 @@ provider:
     STAGE: ${self:custom.stage}
     NODE_OPTIONS: --enable-source-maps
   iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - ecs:RunTask
-      Resource: "*"
+    - Effect: Allow
+      Action: '*'
+      Resource: '*'
 
 functions:
   foo:
