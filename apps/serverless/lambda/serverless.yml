@@ -20,6 +20,7 @@ custom:
 
 provider:
   name: aws
+  profile: monolith
   runtime: nodejs18.x
   stage: ${self:custom.stage}
   endpointType: REGIONAL

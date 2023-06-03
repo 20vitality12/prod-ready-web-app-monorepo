@@ -11,6 +11,8 @@ export const handler = async () => {
 		ECS_SUBNET_IDS: subnets,
 	} = environment
 
+	console.log(environment)
+
 	const ecs: ECS = new ECS({ region: AWS_REGION })
 
 	let response
