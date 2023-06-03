@@ -52,7 +52,7 @@ jobs:
       ###                                                    Test                                                    ###
       ##################################################################################################################
 
-      - name: Test $app
+      - name: Test ${{ inputs.app }}
         if: ${{ inputs.tests }}
         run: npx nx test ${{ env.app}} --skip-nx-cache
 
@@ -60,7 +60,7 @@ jobs:
       ###                                              Deploy serverless                                             ###
       ##################################################################################################################
 
-      - name: Deploy$app
+      - name: Deploy ${{ inputs.app }}
         if: ${{ inputs.tests }}
         run: STAGE=${{ inputs.stage }} npx nx deploy ${{ env.app}} --output-style=stream
 
