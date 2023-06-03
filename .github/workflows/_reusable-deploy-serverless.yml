@@ -17,7 +17,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      app: serverless-${{ inputs.app ))
+      app: serverless-${{ inputs.app }}
     steps:
       ##################################################################################################################
       ###                                             Basic action setup                                             ###
