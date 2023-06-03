@@ -34,7 +34,7 @@ jobs:
       - name: Setup env
         run: |
           echo "CLUSTER=$(aws cloudformation describe-stacks \
-            --stack-name ${{ ecs-cluster-stack }} \
+            --stack-name ${{ env.ecs-cluster-stack }} \
             --query "Stacks[0].Outputs[?OutputKey=='ClusterName'].OutputValue" \
             --output text)" >> $GITHUB_ENV
           echo "SERVICE=$(aws cloudformation describe-stacks \

@@ -21,9 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       stage: ${{ steps.stage.outputs.stage }}
-      ecs-cluster-stack: ${{ steps.stacks.outputs.ecs-cluster-stack }}
     steps:
-
       # return stage name based on pushed branch
       - name: Set stage output
         id: stage
