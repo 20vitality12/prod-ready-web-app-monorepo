@@ -65,14 +65,8 @@ jobs:
 
       - name: Setup S3 Bucket & CF distributionId
         run: |
-          echo "bucket=$(aws cloudformation describe-stacks \
-            --stack-name ${{ env.stack }} \
-            --query "Stacks[0].Outputs[?OutputKey=='BucketName'].OutputValue" \
-            --output text)" >> $GITHUB_ENV
-          echo "distributionId=$(aws cloudformation describe-stacks \
-            --stack-name ${{ env.stack }} \
-            --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" \
-            --output text)" >> $GITHUB_ENV
+          echo "bucket=$(aws cloudformation describe-stacks --stack-name ${{ env.stack }} --query "Stacks[0].Outputs[?OutputKey=='BucketName'].OutputValue" --output text)" >> $GITHUB_ENV
+          echo "distributionId=$(aws cloudformation describe-stacks --stack-name ${{ env.stack }} --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" --output text)" >> $GITHUB_ENV
 
       - name: Upload build to S3
         run: aws s3 sync ./dist/apps/${{ inputs.app }} s3://${{ env.bucket }}

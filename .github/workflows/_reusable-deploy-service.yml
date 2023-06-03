@@ -33,22 +33,10 @@ jobs:
 
       - name: Setup env
         run: |
-          echo "CLUSTER=$(aws cloudformation describe-stacks \
-            --stack-name ${{ env.ecs-cluster-stack }} \
-            --query "Stacks[0].Outputs[?OutputKey=='ClusterName'].OutputValue" \
-            --output text)" >> $GITHUB_ENV
-          echo "SERVICE=$(aws cloudformation describe-stacks \
-            --stack-name ${{ env.stack }} \
-            --query "Stacks[0].Outputs[?OutputKey=='ServiceName'].OutputValue" \
-            --output text)" >> $GITHUB_ENV
-          echo "TASK_FAMILY=$(aws cloudformation describe-stacks \
-            --stack-name ${{ env.stack }} \
-            --query "Stacks[0].Outputs[?OutputKey=='TaskFamilyName'].OutputValue" \
-            --output text)" >> $GITHUB_ENV
-          echo "ECR_REPOSITORY=$(aws cloudformation describe-stacks \
-            --stack-name ${{ env.stack }} \
-            --query "Stacks[0].Outputs[?OutputKey=='RepositoryName'].OutputValue" \
-            --output text)" >> "$GITHUB_ENV"
+          echo "CLUSTER=$(aws cloudformation describe-stacks --stack-name ${{ env.ecs-cluster-stack }} --query "Stacks[0].Outputs[?OutputKey=='ClusterName'].OutputValue" --output text)" >> $GITHUB_ENV
+          echo "SERVICE=$(aws cloudformation describe-stacks --stack-name ${{ env.stack }} --query "Stacks[0].Outputs[?OutputKey=='ServiceName'].OutputValue" --output text)" >> $GITHUB_ENV
+          echo "TASK_FAMILY=$(aws cloudformation describe-stacks --stack-name ${{ env.stack }} --query "Stacks[0].Outputs[?OutputKey=='TaskFamilyName'].OutputValue" --output text)" >> $GITHUB_ENV
+          echo "ECR_REPOSITORY=$(aws cloudformation describe-stacks --stack-name ${{ env.stack }} --query "Stacks[0].Outputs[?OutputKey=='RepositoryName'].OutputValue" --output text)" >> "$GITHUB_ENV"
 
       - name: Download task definition
         run: aws ecs describe-task-definition --task-definition ${{ env.TASK_FAMILY }} --query taskDefinition > task-definition.json
