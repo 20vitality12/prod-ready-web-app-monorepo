@@ -56,10 +56,10 @@ jobs:
 #      - name: Generate prisma client
 #        run: npx nx generate:client prisma
 
-      - name: Build ${{ env.app }}
+      - name: Build $app
         run: npx nx build ${{ env.app}} --skip-nx-cache
 
-      - name: Test ${{ env.app }}
+      - name: Test $app
         if: ${{ inputs.tests }}
         run: npx nx test ${{ env.app}} --skip-nx-cache
 

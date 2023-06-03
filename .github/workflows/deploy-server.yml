@@ -100,10 +100,10 @@ jobs:
       ###                                               Build and Test                                               ###
       ##################################################################################################################
 
-      - name: Build ${{ env.app }}
+      - name: Build $app
         run: npx nx build ${{ env.app }}
 
-      - name: Test ${{ env.app }}
+      - name: Test $app
         if: (inputs.tests == 'true') || (github.event_name == 'push')
         run: npx nx test ${{ env.app }}
 
@@ -136,7 +136,7 @@ jobs:
 
       - name: Run prisma migrations
         env:
-          DATABASE_URL: ${{ env.POSTGRES_DATABASE_URL }}
+          DATABASE_URL: postgresql://${{ env.POSTGRES_USERNAME }}:${{ env.POSTGRES_PASSWORD }}@${{ env.POSTGRES_HOST }}:5432/${{ env.POSTGRES_DBNAME }}
         run: npx nx migrate:deploy prisma --output-style=stream
 
   existing-image:
