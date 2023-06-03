@@ -39,7 +39,7 @@ on:
 
 
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.stage || push }}
+  group: ${{ github.workflow }}-${{ inputs.stage || 'push' }}
 
 env:
   app: server

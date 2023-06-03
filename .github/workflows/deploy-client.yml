@@ -30,7 +30,7 @@ on:
         required: false
 
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.stage || push }}
+  group: ${{ github.workflow }}-${{ inputs.stage || 'push' }}
 
 jobs:
   stage:
