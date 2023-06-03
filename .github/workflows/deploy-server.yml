@@ -141,24 +141,21 @@ jobs:
 
   existing-image:
     needs: stage
-    environment:
-      APP_NAME: ${{ env.APP }}
+
     uses: ./.github/workflows/_reusable-deploy-service.yml
     if: ${{ inputs.image }}
     with:
       stage: ${{ inputs.stage }}
-      app: ${{ env.APP_NAME }}
+      app: server
       image: ${{ inputs.image }}
     secrets: inherit
 
   built-image:
     needs: [ stage, build-test-migrate-docker-build ]
-    environment:
-      APP_NAME: ${{ env.APP }}
     uses: ./.github/workflows/_reusable-deploy-service.yml
     if: ${{ inputs.image == '' }}
     with:
       stage: ${{ inputs.stage || needs.stage.outputs.stage }}
-      app: ${{ env.APP_NAME }}
+      app: server
       image: ${{ github.sha }}
     secrets: inherit
