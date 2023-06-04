@@ -39,4 +39,4 @@ jobs:
       app: ${{ inputs.app }}
       stage: ${{ inputs.stage }}
       destroy: true
-      secrets: inherit
+    secrets: inherit
