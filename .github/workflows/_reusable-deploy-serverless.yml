@@ -10,8 +10,12 @@ on:
         required: true
         type: string
       tests:
-        required: true
+        required: false
         type: boolean
+      deploy:
+        type: string
+      destroy:
+        type: string
 
 jobs:
   deploy:
@@ -61,7 +65,10 @@ jobs:
       ##################################################################################################################
 
       - name: Deploy ${{ inputs.app }}
-        if: ${{ inputs.tests }}
-        run: STAGE=${{ inputs.stage }} npx nx deploy ${{ env.app}} --output-style=stream
+        if : ${{ inputs.deploy }}
+        run: STAGE=${{ inputs.stage }} npx nx deploy ${{ env.app }} --output-style=stream
 
+      - name: Destroy ${{ inputs.app }}
+        if: ${{ inputs.destroy }}
+        run: STAGE=${{ inputs.stage }} npx nx remove ${{ env.app }} --output-style=stream
 
