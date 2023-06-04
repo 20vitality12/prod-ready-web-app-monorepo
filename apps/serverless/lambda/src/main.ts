@@ -18,7 +18,7 @@ export const handler = async () => {
 		response = await ecs.runTask({
 			cluster,
 			taskDefinition,
-			networkConfiguration: { awsvpcConfiguration: { securityGroups, subnets } },
+			networkConfiguration: { awsvpcConfiguration: { securityGroups, subnets, assignPublicIp: 'ENABLED' } },
 			count: 1,
 			launchType: 'FARGATE',
 			overrides: {
