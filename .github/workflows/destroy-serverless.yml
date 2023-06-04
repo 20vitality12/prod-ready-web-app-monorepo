@@ -1,6 +1,6 @@
-name: Deploy serverless app
+name: Destroy serverless app
 
-run-name: ${{ github.workflow }} "${{ inputs.app }}" from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}, [tests - ${{ inputs.tests }}]
+run-name: ${{ github.workflow }} "${{ inputs.app }}" on stage ${{ inputs.stage }} from branch ${{ github.ref_name }}
 
 on:
   workflow_dispatch:
@@ -14,24 +14,16 @@ on:
           - lambda
       stage:
         type: choice
-        description: "Stage from destroy"
+        description: "Stage to deploy"
         required: true
         default: develop
         options:
           - develop
           - production
-      tests:
-        type: boolean
-        description: "Run tests?"
-        default: true
-        required: true
       protection:
-        description: "Write production to deploy from master to production"
+        description: "Write production to destroy production from master"
         required: true
         default: "not-production"
-      branch:
-        description: "Branch, Tag or SHA to checkout *(optional)"
-        required: false
 
 jobs:
   stage:
@@ -46,6 +38,5 @@ jobs:
     with:
       app: ${{ inputs.app }}
       stage: ${{ inputs.stage }}
-      tests: ${{ inputs.tests }}
-      deploy: true
-    secrets: inherit
+      destroy: true
+      secrets: inherit
