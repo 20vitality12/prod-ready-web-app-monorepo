@@ -30,7 +30,7 @@ const { serverInfo } = new ServerStack(app, `${prefix}-server`, {
 	publicHostedZone
 })
 
-new EcsTaskStack(app, `${prefix}-ecs-task`, { ecsCluster })
+new EcsTaskStack(app, `${prefix}-ecs-task`)
 
 !IS_PRODUCTION && new LambdaStageSchedulerStack(app, `${prefix}-lambda-stage-scheduler`, {
 	dbId,

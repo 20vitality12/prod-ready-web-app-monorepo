@@ -6,12 +6,8 @@ import * as ecr from 'aws-cdk-lib/aws-ecr'
 import * as logs from 'aws-cdk-lib/aws-logs'
 import * as iam from 'aws-cdk-lib/aws-iam'
 
-interface EcsTaskStackProps {
-	ecsCluster: ecs.ICluster;
-}
-
 export class EcsTaskStack extends Stack {
-	constructor(scope: Construct, id: string, { ecsCluster }: EcsTaskStackProps) {
+	constructor(scope: Construct, id: string) {
 		super(scope, id)
 
 		const { STAGE } = environment
@@ -48,14 +44,6 @@ export class EcsTaskStack extends Stack {
 			}),
 		)
 		taskDefinition.applyRemovalPolicy(RemovalPolicy.DESTROY)
-
-		new ecs.FargateService(this, 'FargateService', {
-			serviceName: id,
-			assignPublicIp: true,
-			cluster: ecsCluster,
-			desiredCount: 0,
-			taskDefinition,
-		})
 
 		new CfnOutput(this, 'EcsTaskArn', { value: taskDefinition.taskDefinitionArn })
 		new CfnOutput(this, 'RepositoryName', { value: repository.repositoryName })
