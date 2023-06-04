@@ -1,13 +1,20 @@
-name: Destroy AWS infra
+name: Destroy serverless app
 
-run-name: ${{ github.workflow }} on stage ${{ inputs.stage }} from branch ${{ github.ref_name }}
+run-name: ${{ github.workflow }} "${{ inputs.app }}" on stage ${{ inputs.stage }} from branch ${{ github.ref_name }}
 
 on:
   workflow_dispatch:
     inputs:
+      app:
+        type: choice
+        description: "Serverless app to deploy"
+        required: true
+        default: lambda
+        options:
+          - lambda
       stage:
         type: choice
-        description: "Stage to destroy"
+        description: "Stage to deploy"
         required: true
         default: develop
         options:
@@ -17,6 +24,7 @@ on:
         description: "Write production to destroy production from master"
         required: true
         default: "not-production"
+
 jobs:
   stage:
     uses: ./.github/workflows/_reusable-protect-stage.yml
@@ -24,11 +32,11 @@ jobs:
       stage: ${{ inputs.stage }}
       protection: ${{ inputs.protection }}
 
-  destroy:
+  serverless:
     needs: stage
-    uses: ./.github/workflows/_reusable-deploy-cdk.yml
+    uses: ./.github/workflows/_reusable-deploy-serverless.yml
     with:
+      app: ${{ inputs.app }}
       stage: ${{ inputs.stage }}
       destroy: true
-      assets: false
-    secrets: inherit
+      secrets: inherit

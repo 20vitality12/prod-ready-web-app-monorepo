@@ -9,9 +9,6 @@ on:
       protection:
         required: true
         type: string
-      event_name:
-        required: false
-        type: string
     outputs:
       stage:
         value: ${{ jobs.check.outputs.stage }}
@@ -22,22 +19,6 @@ jobs:
     outputs:
       stage: ${{ steps.stage.outputs.stage }}
     steps:
-      # return stage name based on pushed branch
-      - name: Set stage output
-        id: stage
-        run: |
-
-          if [[ ${{ inputs.event_name }} == 'push' ]]; then
-
-            if [[ ${{ github.ref_name }} == 'develop' ]]; then
-              echo "stage=develop" >> $GITHUB_OUTPUT
-            fi
-
-            if [[ ${{ github.ref_name }} == 'master' ]]; then
-              echo "stage=production" >> $GITHUB_OUTPUT
-            fi
-
-          fi
 
       - name: Check stage
         run: |

@@ -3,9 +3,6 @@ name: Deploy server
 run-name: ${{ github.workflow }} from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}, [tests - ${{ inputs.tests }}, migrations - ${{ inputs.migrations }}]
 
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch:
     inputs:
       stage:
@@ -39,7 +36,7 @@ on:
 
 
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.stage || 'push' }}
+  group: ${{ github.workflow }}-${{ inputs.stage }}
 
 env:
   APP: server
@@ -49,7 +46,6 @@ jobs:
   stage:
     uses: ./.github/workflows/_reusable-protect-stage.yml
     with:
-      event_name: ${{ github.event_name }}
       stage: ${{ inputs.stage }}
       protection: ${{ inputs.protection }}
 
@@ -75,7 +71,7 @@ jobs:
         uses: aws-actions/aws-secretsmanager-get-secrets@v1
         with:
           secret-ids: |
-            POSTGRES,${{ inputs.stage || needs.stage.outputs.stage }}/postgres
+            POSTGRES,${{ inputs.stage }}/postgres
           parse-json-secrets: true
 
       - uses: actions/checkout@v3
@@ -104,7 +100,7 @@ jobs:
         run: npx nx build ${{ env.APP }}
 
       - name: Test ${{ env.APP }}
-        if: (inputs.tests == 'true') || (github.event_name == 'push')
+        if: ${{ inputs.tests }}
         run: npx nx test ${{ env.APP }}
 
       ##################################################################################################################
@@ -135,13 +131,13 @@ jobs:
       ##################################################################################################################
 
       - name: Run prisma migrations
+        if: ${{ inputs.migrations }}
         env:
           DATABASE_URL: postgresql://${{ env.POSTGRES_USERNAME }}:${{ env.POSTGRES_PASSWORD }}@${{ env.POSTGRES_HOST }}:5432/${{ env.POSTGRES_DBNAME }}
         run: npx nx migrate:deploy prisma --output-style=stream
 
   existing-image:
     needs: stage
-
     uses: ./.github/workflows/_reusable-deploy-service.yml
     if: ${{ inputs.image }}
     with:
@@ -155,7 +151,7 @@ jobs:
     uses: ./.github/workflows/_reusable-deploy-service.yml
     if: ${{ inputs.image == '' }}
     with:
-      stage: ${{ inputs.stage || needs.stage.outputs.stage }}
+      stage: ${{ inputs.stage }}
       app: server
       image: ${{ github.sha }}
     secrets: inherit

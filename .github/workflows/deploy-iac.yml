@@ -27,7 +27,6 @@ jobs:
   stage:
     uses: ./.github/workflows/_reusable-protect-stage.yml
     with:
-      event_name: ${{ github.event_name }}
       stage: ${{ inputs.stage }}
       protection: ${{ inputs.protection }}
 

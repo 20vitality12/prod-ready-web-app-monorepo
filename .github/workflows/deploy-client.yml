@@ -3,9 +3,6 @@ name: Deploy client
 run-name: ${{ github.workflow }} from branch ${{ inputs.branch || github.ref_name }} to stage ${{ inputs.stage }}, [tests - ${{ inputs.tests }}]
 
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch:
     inputs:
       stage:
@@ -30,13 +27,12 @@ on:
         required: false
 
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.stage || 'push' }}
+  group: ${{ github.workflow }}-${{ inputs.stage }}
 
 jobs:
   stage:
     uses: ./.github/workflows/_reusable-protect-stage.yml
     with:
-      event_name: ${{ github.event_name }}
       stage: ${{ inputs.stage }}
       protection: ${{ inputs.protection }}
 
@@ -45,6 +41,6 @@ jobs:
     uses: ./.github/workflows/_reusable-deploy-client.yml
     with:
       app: client
-      stage: ${{ inputs.stage || needs.stage.outputs.stage }}
-      tests: ${{ inputs.tests}}
+      stage: ${{ inputs.stage }}
+      tests: ${{ inputs.tests }}
     secrets: inherit
