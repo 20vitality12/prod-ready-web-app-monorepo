@@ -14,7 +14,7 @@ on:
           - lambda
       stage:
         type: choice
-        description: "Stage to deploy"
+        description: "Stage from destroy"
         required: true
         default: develop
         options:
