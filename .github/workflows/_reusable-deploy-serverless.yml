@@ -18,7 +18,7 @@ on:
         type: string
 
 jobs:
-  deploy:
+  deploy/destroy:
     runs-on: ubuntu-latest
     env:
       app: serverless-${{ inputs.app }}
