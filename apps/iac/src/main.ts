@@ -14,7 +14,7 @@ const { STACK_NAME_PREFIX: prefix, CLIENT_SUBDOMAIN, SERVER_SUBDOMAIN, IS_PRODUC
 
 const app = new cdk.App()
 
-const { vpc, publicHostedZone} = new VpcStack(app, VPC_NAME)
+const { vpc, publicHostedZone } = new VpcStack(app, VPC_NAME)
 
 const { dbSecretArn, instanceIdentifier: dbId } = new PostgresStack(app, `${prefix}-postgres`, { vpc })
 
