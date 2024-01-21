@@ -34,3 +34,6 @@ This is Nx apps based monorepo template that includes:
  - iac ([AWS CDK](https://aws.amazon.com/cdk))
  - ecs-task (Node)
 
+## Setup
+
+Boilerplate overview with step by step setup on YouTube - https://youtu.be/41-vq0_TsE8
